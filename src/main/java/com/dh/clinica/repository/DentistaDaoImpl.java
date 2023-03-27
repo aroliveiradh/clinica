@@ -16,9 +16,8 @@ import java.util.Optional;
 @Repository
 public class DentistaDaoImpl implements IDao<Dentista> {
 
-    private ConfiguracaoJDBC configuracaoJDBC;
-
     final static Logger log = Logger.getLogger(DentistaDaoImpl.class);
+    private ConfiguracaoJDBC configuracaoJDBC;
 
     public DentistaDaoImpl() {
         this.configuracaoJDBC = new ConfiguracaoJDBC();
