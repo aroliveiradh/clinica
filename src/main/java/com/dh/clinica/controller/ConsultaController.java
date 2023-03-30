@@ -1,10 +1,9 @@
 package com.dh.clinica.controller;
 
 import com.dh.clinica.model.Consulta;
-import com.dh.clinica.model.Paciente;
-import com.dh.clinica.service.ConsultaService;
-import com.dh.clinica.service.DentistaService;
-import com.dh.clinica.service.PacienteService;
+import com.dh.clinica.service.impl.ConsultaServiceImpl;
+import com.dh.clinica.service.impl.DentistaServiceImpl;
+import com.dh.clinica.service.impl.PacienteServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,24 +20,24 @@ public class ConsultaController {
     final static Logger log = Logger.getLogger(PacienteController.class);
 
     @Autowired
-    private PacienteService pacienteService;
+    private PacienteServiceImpl pacienteServiceImpl;
 
     @Autowired
-    private DentistaService dentistaService;
+    private DentistaServiceImpl dentistaServiceImpl;
 
     @Autowired
-    private ConsultaService consultaService;
+    private ConsultaServiceImpl consultaServiceImpl;
 
 
     @PostMapping
     public ResponseEntity<Consulta> cadastrar(@RequestBody Consulta consulta) {
         log.info("Inciando método cadastrar...");
         ResponseEntity<Consulta> response;
-        if(pacienteService.buscarPorId(consulta.getPaciente().getId()).isPresent()
-        && dentistaService.buscarPorId(consulta.getDentista().getId()).isPresent()
+        if(pacienteServiceImpl.buscar(consulta.getPaciente().getId()).isPresent()
+        && dentistaServiceImpl.buscar(consulta.getDentista().getId()).isPresent()
         ) {
             log.info("Cadastrando Consulta: " + consulta.toString());
-            response = ResponseEntity.ok(consultaService.cadastrar(consulta));
+            response = ResponseEntity.ok(consultaServiceImpl.salvar(consulta));
         } else {
             log.info("Não foi possível cadastrar a Consulta, pois é preciso associar um Dentista e um Paciente a consulta.");
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -49,7 +48,7 @@ public class ConsultaController {
     @GetMapping
     public ResponseEntity<List<Consulta>> buscarTodos() {
         log.info("Inciando método buscarTodos...");
-        List<Consulta> consultas = consultaService.buscarTodos();
+        List<Consulta> consultas = consultaServiceImpl.buscarTodos();
         if (!consultas.isEmpty()) {
             log.info("Lista de Consulta encontrada: " + consultas.toString());
             return ResponseEntity.ok(consultas);
@@ -63,9 +62,9 @@ public class ConsultaController {
     public ResponseEntity<Consulta> atualizar(@RequestBody Consulta consulta) {
         log.info("Inciando método atualizar...");
         ResponseEntity<Consulta> response;
-        if (consulta.getId() != null && consultaService.bucarPorId(consulta.getId()).isPresent()) {
+        if (consulta.getId() != null && consultaServiceImpl.buscar(consulta.getId()).isPresent()) {
             log.info("Atualizando consulta com o id: " + consulta.getId());
-            response = ResponseEntity.ok(consultaService.atualizar(consulta));
+            response = ResponseEntity.ok(consultaServiceImpl.atualizar(consulta));
         }
         else {
             log.info("Não foi encontrado nenhuma consulta com o id: " + consulta.getId());
@@ -78,8 +77,8 @@ public class ConsultaController {
     public ResponseEntity<String> excluir(@PathVariable Integer id) {
         log.info("Inciando método excluir...");
         ResponseEntity<String> response;
-        if (consultaService.bucarPorId(id).isPresent()) {
-            consultaService.excluir(id);
+        if (consultaServiceImpl.buscar(id).isPresent()) {
+            consultaServiceImpl.excluir(id);
             response = ResponseEntity.status(HttpStatus.NO_CONTENT).body("Consulta apagada com sucesso!");
         } else {
             log.info("Não foi encontrado nenhuma Consulta com o id: " + id);
@@ -91,12 +90,51 @@ public class ConsultaController {
     @GetMapping("/{id}")
     public ResponseEntity<Consulta> buscarPorId(@PathVariable Integer id) {
         log.info("Inciando método buscarPorId...");
-        Consulta consulta = consultaService.bucarPorId(id).orElse(null);
+        Consulta consulta = consultaServiceImpl.buscar(id).orElse(null);
         if (Objects.nonNull(consulta)) {
             log.info("Consulta encontrada para o id informado: " + consulta.toString());
             return ResponseEntity.ok(consulta);
         } else {
             log.info("Nenhuma Consulta foi encontrado para o id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/paciente/{nome}")
+    public ResponseEntity<List<Consulta>> findConsultaByNomePaciente(@PathVariable String nome) {
+        log.info("Inciando método findConsultaByNomePaciente...");
+        List<Consulta> consultas = consultaServiceImpl.findConsultaByNomePaciente(nome);
+        if (Objects.nonNull(consultas)) {
+            log.info("Consultas encontrada para o paciente: " + consultas.toString());
+            return ResponseEntity.ok(consultas);
+        } else {
+            log.info("Nenhuma Consulta foi encontrado para o paciente: " + nome);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/dentista/{nome}")
+    public ResponseEntity<List<Consulta>> findConsultaByNomeDentista(@PathVariable String nome) {
+        log.info("Inciando método findConsultaByNomeDentista...");
+        List<Consulta> consultas = consultaServiceImpl.findConsultaByNomeDentista(nome);
+        if (Objects.nonNull(consultas)) {
+            log.info("Consultas encontrada para o Dentista: " + consultas.toString());
+            return ResponseEntity.ok(consultas);
+        } else {
+            log.info("Nenhuma Consulta foi encontrado para o dentista: " + nome);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/dentista/matricula/{matricula}")
+    public ResponseEntity<List<Consulta>> findConsultaByMatriculaDentista(@PathVariable String matricula) {
+        log.info("Inciando método findConsultaByMatriculaDentista...");
+        List<Consulta> consultas = consultaServiceImpl.findByDentistaMatricula(matricula);
+        if (Objects.nonNull(consultas)) {
+            log.info("Consultas encontrada para o Dentista: " + consultas.toString());
+            return ResponseEntity.ok(consultas);
+        } else {
+            log.info("Nenhuma Consulta foi encontrado para o Dentista com matricula: " + matricula);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

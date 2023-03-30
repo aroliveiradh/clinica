@@ -1,7 +1,8 @@
 package com.dh.clinica.controller;
 
+import com.dh.clinica.model.Paciente;
 import com.dh.clinica.model.Usuario;
-import com.dh.clinica.service.UsuarioService;
+import com.dh.clinica.service.impl.UsuarioServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,16 +16,20 @@ import java.util.Objects;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    final static Logger log = Logger.getLogger(PacienteController.class);
+    final static Logger log = Logger.getLogger(UsuarioController.class);
+
+    private UsuarioServiceImpl usuarioServiceImpl;
 
     @Autowired
-    private UsuarioService usuarioService;
+    public UsuarioController(UsuarioServiceImpl usuarioServiceImpl) {
+        this.usuarioServiceImpl = usuarioServiceImpl;
+    }
 
     @GetMapping
     public ResponseEntity<List<Usuario>> buscarTodos() {
         log.info("Inciando método buscarTodos...");
         ResponseEntity response = null;
-        List<Usuario> usuarios = usuarioService.buscarTodos();
+        List<Usuario> usuarios = usuarioServiceImpl.buscarTodos();
         if (!usuarios.isEmpty()) {
             log.info("Lista de Usuario encontrada: " + usuarios.toString());
             return ResponseEntity.ok(usuarios);
@@ -38,8 +43,8 @@ public class UsuarioController {
     public ResponseEntity<String> excluir(@PathVariable Integer id) {
         log.info("Inciando método excluir...");
         ResponseEntity<String> response = null;
-        if (usuarioService.buscarPorId(id).isPresent()) {
-            usuarioService.excluir(id);
+        if (usuarioServiceImpl.buscar(id).isPresent()) {
+            usuarioServiceImpl.excluir(id);
             response = ResponseEntity.status(HttpStatus.OK).body("Usuario excluído");
         } else {
             log.info("Não foi encontrado nenhum Usuario com o id: " + id);
@@ -51,12 +56,25 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id) {
         log.info("Inciando método buscarPorId...");
-        Usuario usuario = usuarioService.buscarPorId(id).orElse(null);
+        Usuario usuario = usuarioServiceImpl.buscar(id).orElse(null);
         if (Objects.nonNull(usuario)) {
             log.info("Usuario encontrado para o id informado: " + usuario.toString());
             return ResponseEntity.ok(usuario);
         } else {
             log.info("Nenhum Usuario foi encontrado para o id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<Usuario> buscarPorNome(@PathVariable String nome) {
+        log.info("Inciando método buscarPorNome...");
+        Usuario usuario = usuarioServiceImpl.buscarPorNome(nome).orElse(null);
+        if (Objects.nonNull(usuario)) {
+            log.info("Usuario encontrado: " + usuario.toString());
+            return ResponseEntity.ok(usuario);
+        } else {
+            log.info("Nenhum Usuario foi encontrado com o nome: " + nome);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -67,7 +85,7 @@ public class UsuarioController {
         ResponseEntity response = null;
         if (validarUsuario(usuario)) {
             log.info("Cadastrando usuario: " + usuario.toString());
-            response = ResponseEntity.ok(usuarioService.cadastrar(usuario));
+            response = ResponseEntity.ok(usuarioServiceImpl.salvar(usuario));
         } else {
             log.info("Não foi possível cadastrar o usuario, pois o endereço do usuario não foi informado ou foi informado sem todos os atributos");
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -79,11 +97,10 @@ public class UsuarioController {
     public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) throws Exception {
         log.info("Inciando método atualizar...");
         ResponseEntity response = null;
-        if (usuario.getId() != null && usuarioService.buscarPorId(usuario.getId()).isPresent()) {
+        if (usuario.getId() != null && usuarioServiceImpl.buscar(usuario.getId()).isPresent()) {
             log.info("Atualizando usuario com o id: " + usuario.getId());
-            response = ResponseEntity.ok(usuarioService.atualizar(usuario));
-        }
-        else {
+            response = ResponseEntity.ok(usuarioServiceImpl.atualizar(usuario));
+        } else {
             log.info("Não foi encontrado nenhum usuario com o id: " + usuario.getId());
             response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
