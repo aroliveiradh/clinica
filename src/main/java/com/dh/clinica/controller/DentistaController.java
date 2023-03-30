@@ -1,7 +1,7 @@
 package com.dh.clinica.controller;
 
 import com.dh.clinica.model.Dentista;
-import com.dh.clinica.service.DentistaService;
+import com.dh.clinica.service.impl.DentistaServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class DentistaController {
     final static Logger log = Logger.getLogger(DentistaController.class);
 
     @Autowired
-    private DentistaService dentistaService;
+    private DentistaServiceImpl dentistaServiceImpl;
 
     @PostMapping
     public ResponseEntity<Dentista> cadastrar(@RequestBody Dentista dentista) {
@@ -26,7 +26,7 @@ public class DentistaController {
         ResponseEntity response = null;
         if (validaDentista(dentista)) {
             log.info("Cadastrando Dentista: " + dentista.toString());
-            response = ResponseEntity.ok(dentistaService.cadastrar(dentista));
+            response = ResponseEntity.ok(dentistaServiceImpl.salvar(dentista));
         } else {
             log.info("Não foi possível cadastrar o Dentista, pois não foram informados todos os atributos");
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -39,7 +39,7 @@ public class DentistaController {
     public ResponseEntity<List<Dentista>> buscarTodos() {
         log.info("Inciando método buscarTodos...");
         ResponseEntity response = null;
-        List<Dentista> dentistas = dentistaService.buscarTodos();
+        List<Dentista> dentistas = dentistaServiceImpl.buscarTodos();
         if (!dentistas.isEmpty()) {
             log.info("Lista de Dentista encontrada: " + dentistas.toString());
             return ResponseEntity.ok(dentistas);
@@ -52,7 +52,7 @@ public class DentistaController {
     @GetMapping("/{id}")
     public ResponseEntity<Dentista> buscarPorId(@PathVariable Integer id) {
         log.info("Inciando método buscarPorId...");
-        Dentista dentista = dentistaService.buscarPorId(id).orElse(null);
+        Dentista dentista = dentistaServiceImpl.buscar(id).orElse(null);
         if (Objects.nonNull(dentista)) {
             log.info("Dentista encontrado para o id informado: " + dentista.toString());
             return ResponseEntity.ok(dentista);
@@ -62,12 +62,17 @@ public class DentistaController {
         }
     }
 
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<Dentista> buscarPorNome (@PathVariable String nome) {
+        return ResponseEntity.ok(dentistaServiceImpl.buscarPorNome(nome).orElse(null));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> excluir(@PathVariable Integer id) {
         log.info("Inciando método excluir...");
         ResponseEntity<String> response = null;
-        if (dentistaService.buscarPorId(id).isPresent()) {
-            dentistaService.excluir(id);
+        if (dentistaServiceImpl.buscar(id).isPresent()) {
+            dentistaServiceImpl.excluir(id);
             response = ResponseEntity.status(HttpStatus.OK).body("Dentista excluído");
         } else {
             log.info("Não foi encontrado nenhum Dentista com o id: " + id);
@@ -80,9 +85,9 @@ public class DentistaController {
     public ResponseEntity<Dentista> atualizar(@RequestBody Dentista dentista) throws Exception {
         log.info("Inciando método atualizar...");
         ResponseEntity response = null;
-        if (dentista.getId() != null && dentistaService.buscarPorId(dentista.getId()).isPresent()) {
+        if (dentista.getId() != null && dentistaServiceImpl.buscar(dentista.getId()).isPresent()) {
             log.info("Atualizando dentista com o id: " + dentista.getId());
-            response = ResponseEntity.ok(dentistaService.atualizar(dentista));
+            response = ResponseEntity.ok(dentistaServiceImpl.atualizar(dentista));
         }
         else {
             log.info("Não foi encontrado nenhum dentista com o id: " + dentista.getId());
