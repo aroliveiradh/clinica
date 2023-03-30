@@ -1,8 +1,9 @@
 package com.dh.clinica.controller;
 
 
+import com.dh.clinica.model.Dentista;
 import com.dh.clinica.model.Paciente;
-import com.dh.clinica.service.PacienteService;
+import com.dh.clinica.service.impl.PacienteServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,15 +20,15 @@ public class PacienteController {
     final static Logger log = Logger.getLogger(PacienteController.class);
 
     @Autowired
-    private PacienteService pacienteService;
+    private PacienteServiceImpl pacienteServiceImpl;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Paciente> cadastrar(@RequestBody Paciente paciente) {
         log.info("Inciando método cadastrar...");
         ResponseEntity<Paciente> response;
         if (validaEndereco(paciente)) {
             log.info("Cadastrando paciente: " + paciente.toString());
-            response = ResponseEntity.ok(pacienteService.cadastrar(paciente));
+            response = ResponseEntity.ok(pacienteServiceImpl.salvar(paciente));
         } else {
             log.info("Não foi possível cadastrar o paciente, pois o endereço do paciente não foi informado ou foi informado sem todos os atributos");
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -38,7 +39,7 @@ public class PacienteController {
     @GetMapping("/{id}")
     public ResponseEntity<Paciente> buscarPorId(@PathVariable Integer id) {
         log.info("Inciando método buscarPorId...");
-        Paciente paciente = pacienteService.buscarPorId(id).orElse(null);
+        Paciente paciente = pacienteServiceImpl.buscar(id).orElse(null);
         if (Objects.nonNull(paciente)) {
             log.info("Paciente encontrado para o id informado: " + paciente.toString());
             return ResponseEntity.ok(paciente);
@@ -52,9 +53,9 @@ public class PacienteController {
     public ResponseEntity<Paciente> atualizar(@RequestBody Paciente paciente) throws Exception {
         log.info("Inciando método atualizar...");
         ResponseEntity response = null;
-        if (paciente.getId() != null && pacienteService.buscarPorId(paciente.getId()).isPresent()) {
+        if (paciente.getId() != null && pacienteServiceImpl.buscar(paciente.getId()).isPresent()) {
             log.info("Atualizando paciente com o id: " + paciente.getId());
-            response = ResponseEntity.ok(pacienteService.atualizar(paciente));
+            response = ResponseEntity.ok(pacienteServiceImpl.atualizar(paciente));
         }
         else {
             log.info("Não foi encontrado nenhum paciente com o id: " + paciente.getId());
@@ -67,8 +68,8 @@ public class PacienteController {
     public ResponseEntity<String> excluir(@PathVariable Integer id) {
         log.info("Inciando método excluir...");
         ResponseEntity<String> response;
-        if (pacienteService.buscarPorId(id).isPresent()) {
-            pacienteService.excluir(id);
+        if (pacienteServiceImpl.buscar(id).isPresent()) {
+            pacienteServiceImpl.excluir(id);
             response = ResponseEntity.status(HttpStatus.OK).body("Paciente excluído");
         } else {
             log.info("Não foi encontrado nenhum paciente com o id: " + id);
@@ -80,7 +81,7 @@ public class PacienteController {
     @GetMapping
     public ResponseEntity<List<Paciente>> buscarTodos() {
         log.info("Inciando método buscarTodos...");
-        List<Paciente> pacientes = pacienteService.buscarTodos();
+        List<Paciente> pacientes = pacienteServiceImpl.buscarTodos();
         if (!pacientes.isEmpty()) {
             log.info("Lista de Pacientes encontrada: " + pacientes.toString());
             return ResponseEntity.ok(pacientes);
@@ -89,6 +90,21 @@ public class PacienteController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
+
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<Paciente> buscarPorNome (@PathVariable String nome) {
+
+        log.info("Inciando método buscarPorNome...");
+        Paciente paciente = pacienteServiceImpl.buscarPorNome(nome).orElse(null);
+        if (Objects.nonNull(paciente)) {
+            log.info("Paciente encontrado: " + paciente.toString());
+            return ResponseEntity.ok(paciente);
+        } else {
+            log.info("Nenhum Paciente foi encontrado com o nome: " + nome);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     private static boolean validaEndereco(Paciente paciente) {
         return Objects.nonNull(paciente.getEndereco()) &&
                 Objects.nonNull(paciente.getEndereco().getCidade()) &&
