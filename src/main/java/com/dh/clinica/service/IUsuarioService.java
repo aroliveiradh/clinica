@@ -1,5 +1,7 @@
 package com.dh.clinica.service;
 
+import com.dh.clinica.controller.dto.UsuarioRequest;
+import com.dh.clinica.controller.dto.UsuarioResponse;
 import com.dh.clinica.model.Usuario;
 
 import java.util.List;
@@ -7,16 +9,17 @@ import java.util.Optional;
 
 public interface IUsuarioService {
 
-    Usuario salvar(Usuario usuario);
+    UsuarioResponse salvar(UsuarioRequest usuario);
 
-    List<Usuario> buscarTodos();
+    List<UsuarioResponse> buscarTodos();
 
     void excluir(Integer id);
 
-    Optional<Usuario> buscar(Integer id);
+    Optional<UsuarioResponse> buscar(Integer id);
 
-    Optional<Usuario> buscarPorNome(String nome);
+    Optional<UsuarioResponse> buscarPorNome(String nome);
+    Optional<UsuarioResponse> buscarPorEmail(String email);
 
-    Usuario atualizar(Usuario usuario);
+    UsuarioResponse atualizar(UsuarioRequest usuario);
 
 }

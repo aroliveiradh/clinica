@@ -1,5 +1,7 @@
 package com.dh.clinica.controller;
 
+import com.dh.clinica.controller.dto.UsuarioRequest;
+import com.dh.clinica.controller.dto.UsuarioResponse;
 import com.dh.clinica.model.Paciente;
 import com.dh.clinica.model.Usuario;
 import com.dh.clinica.service.impl.UsuarioServiceImpl;
@@ -26,13 +28,13 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> buscarTodos() {
+    public ResponseEntity<List<UsuarioResponse>> buscarTodos() {
         log.info("Inciando método buscarTodos...");
         ResponseEntity response = null;
-        List<Usuario> usuarios = usuarioServiceImpl.buscarTodos();
-        if (!usuarios.isEmpty()) {
-            log.info("Lista de Usuario encontrada: " + usuarios.toString());
-            return ResponseEntity.ok(usuarios);
+        List<UsuarioResponse> responses = usuarioServiceImpl.buscarTodos();
+        if (!responses.isEmpty()) {
+            log.info("Lista de Usuario encontrada: " + responses.toString());
+            return ResponseEntity.ok(responses);
         } else {
             log.info("Não há Usuários cadastrados");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -54,12 +56,12 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Integer id) {
         log.info("Inciando método buscarPorId...");
-        Usuario usuario = usuarioServiceImpl.buscar(id).orElse(null);
-        if (Objects.nonNull(usuario)) {
-            log.info("Usuario encontrado para o id informado: " + usuario.toString());
-            return ResponseEntity.ok(usuario);
+        UsuarioResponse usuarioResponse = usuarioServiceImpl.buscar(id).orElse(null);
+        if (Objects.nonNull(usuarioResponse)) {
+            log.info("Usuario encontrado para o id informado: " + usuarioResponse.toString());
+            return ResponseEntity.ok(usuarioResponse);
         } else {
             log.info("Nenhum Usuario foi encontrado para o id: " + id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -67,12 +69,12 @@ public class UsuarioController {
     }
 
     @GetMapping("/nome/{nome}")
-    public ResponseEntity<Usuario> buscarPorNome(@PathVariable String nome) {
+    public ResponseEntity<UsuarioResponse> buscarPorNome(@PathVariable String nome) {
         log.info("Inciando método buscarPorNome...");
-        Usuario usuario = usuarioServiceImpl.buscarPorNome(nome).orElse(null);
-        if (Objects.nonNull(usuario)) {
-            log.info("Usuario encontrado: " + usuario.toString());
-            return ResponseEntity.ok(usuario);
+        UsuarioResponse usuarioResponse = usuarioServiceImpl.buscarPorNome(nome).orElse(null);
+        if (Objects.nonNull(usuarioResponse)) {
+            log.info("Usuario encontrado: " + usuarioResponse.toString());
+            return ResponseEntity.ok(usuarioResponse);
         } else {
             log.info("Nenhum Usuario foi encontrado com o nome: " + nome);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -80,12 +82,12 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody UsuarioRequest request) {
         log.info("Inciando método cadastrar...");
         ResponseEntity response = null;
-        if (validarUsuario(usuario)) {
-            log.info("Cadastrando usuario: " + usuario.toString());
-            response = ResponseEntity.ok(usuarioServiceImpl.salvar(usuario));
+        if (validarUsuario(request)) {
+            log.info("Cadastrando usuario: " + request.toString());
+            response = ResponseEntity.ok(usuarioServiceImpl.salvar(request));
         } else {
             log.info("Não foi possível cadastrar o usuario, pois o endereço do usuario não foi informado ou foi informado sem todos os atributos");
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -94,20 +96,20 @@ public class UsuarioController {
     }
 
     @PutMapping
-    public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) throws Exception {
+    public ResponseEntity<UsuarioResponse> atualizar(@RequestBody UsuarioRequest usuarioRequest) throws Exception {
         log.info("Inciando método atualizar...");
         ResponseEntity response = null;
-        if (usuario.getId() != null && usuarioServiceImpl.buscar(usuario.getId()).isPresent()) {
-            log.info("Atualizando usuario com o id: " + usuario.getId());
-            response = ResponseEntity.ok(usuarioServiceImpl.atualizar(usuario));
+        if (usuarioRequest.getEmail() != null && usuarioServiceImpl.buscarPorEmail(usuarioRequest.getEmail()).isPresent()) {
+            log.info("Atualizando usuario: " + usuarioRequest.getNome());
+            response = ResponseEntity.ok(usuarioServiceImpl.atualizar(usuarioRequest));
         } else {
-            log.info("Não foi encontrado nenhum usuario com o id: " + usuario.getId());
+            log.info("Usuario não encontrado: " + usuarioRequest.getNome());
             response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return response;
     }
 
-    private boolean validarUsuario(Usuario usuario) {
+    private boolean validarUsuario(UsuarioRequest usuario) {
         return Objects.nonNull(usuario) &&
                 Objects.nonNull(usuario.getNome()) &&
                 !usuario.getNome().isEmpty() &&

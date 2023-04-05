@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 public class ConsultaDTO {
 
     private PacienteDTO pacienteDTO;
-    private DentistaDTO dentistaDTO;
+    private DentistaResponse dentistaResponse;
     private LocalDateTime dataConsulta;
 }
