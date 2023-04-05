@@ -29,4 +29,5 @@ public class Consulta {
     private Dentista dentista;
 
     private LocalDateTime dataConsulta;
+
 }

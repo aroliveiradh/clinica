@@ -34,8 +34,7 @@ public class ConsultaController {
         log.info("Inciando método cadastrar...");
         ResponseEntity<Consulta> response;
         if(pacienteServiceImpl.buscar(consulta.getPaciente().getId()).isPresent()
-        && dentistaServiceImpl.buscar(consulta.getDentista().getId()).isPresent()
-        ) {
+        && dentistaServiceImpl.buscar(consulta.getDentista().getId()) != null) {
             log.info("Cadastrando Consulta: " + consulta.toString());
             response = ResponseEntity.ok(consultaServiceImpl.salvar(consulta));
         } else {
