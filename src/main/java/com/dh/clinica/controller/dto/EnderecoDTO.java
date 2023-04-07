@@ -1,7 +1,15 @@
 package com.dh.clinica.controller.dto;
 
-public class EnderecoDTO {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class EnderecoDTO {
     private String rua;
     private String numero;
     private String cidade;

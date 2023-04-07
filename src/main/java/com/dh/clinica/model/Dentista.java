@@ -1,10 +1,7 @@
 package com.dh.clinica.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.context.annotation.Bean;
 
 @Getter
@@ -12,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Dentista {
 
     @Id

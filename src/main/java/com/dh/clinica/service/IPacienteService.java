@@ -1,5 +1,7 @@
 package com.dh.clinica.service;
 
+import com.dh.clinica.controller.dto.PacienteRequest;
+import com.dh.clinica.controller.dto.PacienteResponse;
 import com.dh.clinica.model.Paciente;
 
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.Optional;
 
 public interface IPacienteService {
 
-    Paciente salvar(Paciente paciente);
+    PacienteResponse salvar(PacienteRequest paciente);
 
     List<Paciente> buscarTodos();
 
