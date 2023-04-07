@@ -1,9 +1,14 @@
 package com.dh.clinica.service.impl;
 
 
+import com.dh.clinica.controller.dto.PacienteRequest;
+import com.dh.clinica.controller.dto.PacienteResponse;
 import com.dh.clinica.model.Paciente;
 import com.dh.clinica.repository.IPacienteRepository;
 import com.dh.clinica.service.IPacienteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,15 +17,20 @@ import java.util.Optional;
 @Service
 public class PacienteServiceImpl implements IPacienteService {
 
+    ObjectMapper mapper = new ObjectMapper();
     private IPacienteRepository pacienteRepository;
 
+    @Autowired
     public PacienteServiceImpl(IPacienteRepository pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
     }
 
-    public Paciente salvar(Paciente paciente) {
-        //paciente.setDataCadastro(new Date());
-        return pacienteRepository.save(paciente);
+    public PacienteResponse salvar(PacienteRequest pacienteRequest) {
+        mapper.registerModule(new JavaTimeModule());
+        Paciente pacienteEntity = mapper.convertValue(pacienteRequest, Paciente.class);
+        Paciente pacienteSalvo = pacienteRepository.save(pacienteEntity);
+        PacienteResponse pacienteResponse = mapper.convertValue(pacienteSalvo, PacienteResponse.class);
+        return pacienteResponse;
     }
 
     public Optional<Paciente> buscar(Integer id) {

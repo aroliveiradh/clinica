@@ -1,5 +1,6 @@
 package com.dh.clinica.controller;
 
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Consulta;
 import com.dh.clinica.service.impl.ConsultaServiceImpl;
 import com.dh.clinica.service.impl.DentistaServiceImpl;
@@ -30,16 +31,15 @@ public class ConsultaController {
 
 
     @PostMapping
-    public ResponseEntity<Consulta> cadastrar(@RequestBody Consulta consulta) {
+    public ResponseEntity<Consulta> cadastrar(@RequestBody Consulta consulta) throws ResourceNotFoundException {
         log.info("Inciando método cadastrar...");
         ResponseEntity<Consulta> response;
-        if(pacienteServiceImpl.buscar(consulta.getPaciente().getId()).isPresent()
-        && dentistaServiceImpl.buscar(consulta.getDentista().getId()) != null) {
+        if (pacienteServiceImpl.buscar(consulta.getPaciente().getId()).isPresent()
+                && dentistaServiceImpl.buscar(consulta.getDentista().getId()) != null) {
             log.info("Cadastrando Consulta: " + consulta.toString());
             response = ResponseEntity.ok(consultaServiceImpl.salvar(consulta));
         } else {
-            log.info("Não foi possível cadastrar a Consulta, pois é preciso associar um Dentista e um Paciente a consulta.");
-            response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new ResourceNotFoundException("msg");
         }
         return response;
     }
@@ -64,8 +64,7 @@ public class ConsultaController {
         if (consulta.getId() != null && consultaServiceImpl.buscar(consulta.getId()).isPresent()) {
             log.info("Atualizando consulta com o id: " + consulta.getId());
             response = ResponseEntity.ok(consultaServiceImpl.atualizar(consulta));
-        }
-        else {
+        } else {
             log.info("Não foi encontrado nenhuma consulta com o id: " + consulta.getId());
             response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

@@ -1,6 +1,8 @@
 package com.dh.clinica.controller;
 
 
+import com.dh.clinica.controller.dto.PacienteRequest;
+import com.dh.clinica.controller.dto.PacienteResponse;
 import com.dh.clinica.model.Dentista;
 import com.dh.clinica.model.Paciente;
 import com.dh.clinica.service.impl.PacienteServiceImpl;
@@ -23,12 +25,12 @@ public class PacienteController {
     private PacienteServiceImpl pacienteServiceImpl;
 
     @PostMapping
-    public ResponseEntity<Paciente> cadastrar(@RequestBody Paciente paciente) {
+    public ResponseEntity<PacienteResponse> cadastrar(@RequestBody PacienteRequest pacienteRequest) {
         log.info("Inciando método cadastrar...");
-        ResponseEntity<Paciente> response;
-        if (validaEndereco(paciente)) {
-            log.info("Cadastrando paciente: " + paciente.toString());
-            response = ResponseEntity.ok(pacienteServiceImpl.salvar(paciente));
+        ResponseEntity<PacienteResponse> response;
+        if (validaEnderecoDTO(pacienteRequest)) {
+            log.info("Cadastrando paciente: " + pacienteRequest.toString());
+            response = ResponseEntity.ok(pacienteServiceImpl.salvar(pacienteRequest));
         } else {
             log.info("Não foi possível cadastrar o paciente, pois o endereço do paciente não foi informado ou foi informado sem todos os atributos");
             response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -105,19 +107,19 @@ public class PacienteController {
         }
     }
 
-    private static boolean validaEndereco(Paciente paciente) {
-        return Objects.nonNull(paciente.getEndereco()) &&
-                Objects.nonNull(paciente.getEndereco().getCidade()) &&
-                !paciente.getEndereco().getCidade().isEmpty() &&
-                !paciente.getEndereco().getCidade().isBlank() &&
-                Objects.nonNull(paciente.getEndereco().getRua()) &&
-                !paciente.getEndereco().getRua().isEmpty() &&
-                !paciente.getEndereco().getRua().isBlank() &&
-                Objects.nonNull(paciente.getEndereco().getNumero()) &&
-                !paciente.getEndereco().getNumero().isEmpty() &&
-                !paciente.getEndereco().getNumero().isBlank() &&
-                Objects.nonNull(paciente.getEndereco().getEstado()) &&
-                !paciente.getEndereco().getEstado().isEmpty() &&
-                !paciente.getEndereco().getEstado().isBlank();
+    private static boolean validaEnderecoDTO(PacienteRequest pacienteRequest) {
+        return Objects.nonNull(pacienteRequest.getEndereco()) &&
+                Objects.nonNull(pacienteRequest.getEndereco().getCidade()) &&
+                !pacienteRequest.getEndereco().getCidade().isEmpty() &&
+                !pacienteRequest.getEndereco().getCidade().isBlank() &&
+                Objects.nonNull(pacienteRequest.getEndereco().getRua()) &&
+                !pacienteRequest.getEndereco().getRua().isEmpty() &&
+                !pacienteRequest.getEndereco().getRua().isBlank() &&
+                Objects.nonNull(pacienteRequest.getEndereco().getNumero()) &&
+                !pacienteRequest.getEndereco().getNumero().isEmpty() &&
+                !pacienteRequest.getEndereco().getNumero().isBlank() &&
+                Objects.nonNull(pacienteRequest.getEndereco().getEstado()) &&
+                !pacienteRequest.getEndereco().getEstado().isEmpty() &&
+                !pacienteRequest.getEndereco().getEstado().isBlank();
     }
 }

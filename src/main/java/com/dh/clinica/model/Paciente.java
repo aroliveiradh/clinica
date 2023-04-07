@@ -28,6 +28,14 @@ public class Paciente {
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;
 
+    public Paciente(String nome, String sobrenome, String rg, LocalDate dataCadastro, Endereco endereco) {
+        this.nome = nome;
+        this.sobrenome = sobrenome;
+        this.rg = rg;
+        this.dataCadastro = dataCadastro;
+        this.endereco = endereco;
+    }
+
     @Override
     public String toString() {
         return "Paciente{" +

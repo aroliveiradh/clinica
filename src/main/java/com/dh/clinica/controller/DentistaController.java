@@ -2,6 +2,8 @@ package com.dh.clinica.controller;
 
 import com.dh.clinica.controller.dto.DentistaRequest;
 import com.dh.clinica.controller.dto.DentistaResponse;
+import com.dh.clinica.exception.InvalidDataException;
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Dentista;
 import com.dh.clinica.service.impl.DentistaServiceImpl;
 import org.apache.log4j.Logger;
@@ -15,7 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/dentistas")
+@RequestMapping(value = "/dentistas")
 public class DentistaController {
 
     final static Logger log = Logger.getLogger(DentistaController.class);
@@ -24,45 +26,36 @@ public class DentistaController {
     private DentistaServiceImpl dentistaServiceImpl;
 
     @PostMapping
-    public ResponseEntity<DentistaResponse> cadastrar(@RequestBody DentistaRequest request) {
+    public ResponseEntity<DentistaResponse> cadastrar(@RequestBody DentistaRequest request) throws InvalidDataException {
         log.info("Inciando método cadastrar...");
         ResponseEntity response = null;
         if (validaDentista(request)) {
             log.info("Cadastrando Dentista: " + request.toString());
             response = ResponseEntity.ok(dentistaServiceImpl.salvar(request));
         } else {
-            log.info("Não foi possível cadastrar o Dentista, pois não foram informados todos os atributos");
-            response = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new InvalidDataException("Não foi possível cadastrar o Dentista, pois não foram informados todos os atributos");
         }
         return response;
     }
 
 
     @GetMapping
-    public ResponseEntity<List<DentistaResponse>> buscarTodos() {
+    public ResponseEntity<List<DentistaResponse>> buscarTodos() throws ResourceNotFoundException {
         log.info("Inciando método buscarTodos...");
-        ResponseEntity response = null;
         List<DentistaResponse> dentistas = dentistaServiceImpl.buscarTodos();
         if (!dentistas.isEmpty()) {
             log.info("Lista de Dentista encontrada: " + dentistas.toString());
             return ResponseEntity.ok(dentistas);
         } else {
-            log.info("Não há Dentistas cadastrados");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            throw new ResourceNotFoundException("Não há registros de Dentistas");
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<DentistaResponse>> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<DentistaResponse> buscarPorId(@PathVariable Integer id) throws ResourceNotFoundException {
         log.info("Inciando método buscarPorId...");
-        Optional<DentistaResponse> dentistaResponse = dentistaServiceImpl.buscar(id);
-        if (Objects.nonNull(dentistaResponse)) {
-            log.info("Dentista encontrado para o id informado: " + dentistaResponse.toString());
-            return ResponseEntity.ok(dentistaResponse);
-        } else {
-            log.info("Nenhum Dentista foi encontrado para o id: " + id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        DentistaResponse dentistaResponse = dentistaServiceImpl.buscar(id);
+        return ResponseEntity.ok(dentistaResponse);
     }
 
     @GetMapping("/nome/{nome}")
@@ -80,16 +73,16 @@ public class DentistaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> excluir(@PathVariable Integer id) {
-        log.info("Inciando método excluir...");
-        ResponseEntity<String> response = null;
-        if (dentistaServiceImpl.buscar(id) != null) {
-            dentistaServiceImpl.excluir(id);
-            response = ResponseEntity.status(HttpStatus.OK).body("Dentista excluído");
-        } else {
-            log.info("Não foi encontrado nenhum Dentista com o id: " + id);
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum registro registro foi encontrado para o id informado");
-        }
-        return response;
+//        log.info("Inciando método excluir...");
+//        ResponseEntity<String> response = null;
+//        if (dentistaServiceImpl.buscar(id) != null) {
+//            dentistaServiceImpl.excluir(id);
+//            response = ResponseEntity.status(HttpStatus.OK).body("Dentista excluído");
+//        } else {
+//            log.info("Não foi encontrado nenhum Dentista com o id: " + id);
+//            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum registro registro foi encontrado para o id informado");
+//        }
+        return null;
     }
 
     @PutMapping

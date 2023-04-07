@@ -2,6 +2,7 @@ package com.dh.clinica.service.impl;
 
 import com.dh.clinica.controller.dto.DentistaRequest;
 import com.dh.clinica.controller.dto.DentistaResponse;
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Dentista;
 import com.dh.clinica.repository.IDentistaRepository;
 import com.dh.clinica.service.IDentistaService;
@@ -49,11 +50,14 @@ public class DentistaServiceImpl implements IDentistaService {
     }
 
     @Override
-    public Optional<DentistaResponse> buscar(Integer id) {
+    public DentistaResponse buscar(Integer id) throws ResourceNotFoundException {
         Optional<Dentista> dentista = dentistaRepository.findById(id);
-        DentistaResponse dentistaResponse = toDentistaResponse(dentista);
-//        DentistaResponse dentistaResponse = mapper.convertValue(dentistaRepository.findById(id), DentistaResponse.class);
-        return Optional.ofNullable(dentistaResponse);
+        if (!dentista.isEmpty()) {
+            DentistaResponse dentistaResponse = toDentistaResponse(dentista);
+            return dentistaResponse;
+        } else {
+            throw new ResourceNotFoundException("msg");
+        }
     }
 
     private DentistaResponse toDentistaResponse(Optional<Dentista> dentista) {
