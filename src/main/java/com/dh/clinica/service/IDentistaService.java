@@ -6,15 +6,14 @@ import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Dentista;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IDentistaService {
 
-    DentistaResponse salvar(DentistaRequest request);
-    List<DentistaResponse> buscarTodos();
-    void excluir(Integer id);
+    DentistaResponse salvar(DentistaRequest request) throws ResourceNotFoundException;
+    List<DentistaResponse> buscarTodos() throws ResourceNotFoundException;
+    void excluir(Integer id) throws ResourceNotFoundException;
     DentistaResponse buscar(Integer id) throws ResourceNotFoundException;
-    Optional<DentistaResponse> buscarPorNome(String nome);
-    DentistaResponse atualizar (DentistaRequest dentista);
-    Optional<DentistaResponse> buscarPorMatricula(String matricula);
+    List<DentistaResponse> buscarPorNome(String nome) throws ResourceNotFoundException;
+    DentistaResponse atualizar (Dentista dentista) throws ResourceNotFoundException;
+    DentistaResponse buscarPorMatricula(String matricula) throws ResourceNotFoundException;
 }

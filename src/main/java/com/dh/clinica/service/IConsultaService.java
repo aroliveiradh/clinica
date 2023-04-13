@@ -1,21 +1,22 @@
 package com.dh.clinica.service;
 
+import com.dh.clinica.controller.dto.ConsultaResponse;
+import com.dh.clinica.exception.InvalidDataException;
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Consulta;
-import com.dh.clinica.model.Dentista;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IConsultaService {
 
-    Consulta salvar(Consulta consulta);
-    List<Consulta> buscarTodos();
-    void excluir(Integer id);
-    Optional<Consulta> buscar(Integer id);
+    ConsultaResponse salvar(Consulta consulta) throws InvalidDataException;
+    List<ConsultaResponse> buscarTodos() throws ResourceNotFoundException;
+    void excluir(Integer id) throws ResourceNotFoundException;
+    ConsultaResponse buscar(Integer id) throws ResourceNotFoundException;
 //    Optional<Consulta> buscarPorDentista(String nome);
-    Consulta atualizar (Consulta consulta);
-    List<Consulta> findConsultaByNomePaciente(String nome);
-    List<Consulta> findConsultaByNomeDentista(String nome);
-    List<Consulta> findByDentistaMatricula(String matricula);
+    ConsultaResponse atualizar (Consulta consulta) throws ResourceNotFoundException;
+    List<ConsultaResponse> findConsultaByNomePaciente(String nome) throws ResourceNotFoundException;
+    List<ConsultaResponse> findConsultaByNomeDentista(String nome) throws ResourceNotFoundException;
+    List<ConsultaResponse> findByDentistaMatricula(String matricula) throws ResourceNotFoundException;
 
 }

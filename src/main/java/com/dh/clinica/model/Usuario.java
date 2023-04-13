@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -37,4 +38,5 @@ public class Usuario {
                 ", nivelAcesso=" + nivelAcesso +
                 '}';
     }
+
 }
