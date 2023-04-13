@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface IPacienteRepository extends JpaRepository<Paciente, Integer> {
-    Optional<Paciente> findPacienteByNomeContainingIgnoreCase(String nome);
+    Paciente findPacienteByNomeContainingIgnoreCase(String nome);
 }

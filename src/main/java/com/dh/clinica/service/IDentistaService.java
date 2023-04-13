@@ -1,17 +1,19 @@
 package com.dh.clinica.service;
 
+import com.dh.clinica.controller.dto.DentistaRequestDTO;
+import com.dh.clinica.controller.dto.DentistaResponseDTO;
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Dentista;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IDentistaService {
 
-    Dentista salvar(Dentista dentista);
-    List<Dentista> buscarTodos();
-    void excluir(Integer id);
-    Optional<Dentista> buscar(Integer id);
-    Optional<Dentista> buscarPorNome(String nome);
-    Dentista atualizar (Dentista dentista);
-
+    DentistaResponseDTO salvar(DentistaRequestDTO request) throws ResourceNotFoundException;
+    List<DentistaResponseDTO> buscarTodos() throws ResourceNotFoundException;
+    void excluir(Integer id) throws ResourceNotFoundException;
+    DentistaResponseDTO buscar(Integer id) throws ResourceNotFoundException;
+    List<DentistaResponseDTO> buscarPorNome(String nome) throws ResourceNotFoundException;
+    DentistaResponseDTO atualizar (Dentista dentista) throws ResourceNotFoundException;
+    DentistaResponseDTO buscarPorMatricula(String matricula) throws ResourceNotFoundException;
 }

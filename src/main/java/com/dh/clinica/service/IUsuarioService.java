@@ -1,22 +1,26 @@
 package com.dh.clinica.service;
 
+import com.dh.clinica.controller.dto.UsuarioRequestDTO;
+import com.dh.clinica.controller.dto.UsuarioResponseDTO;
+import com.dh.clinica.exception.InvalidDataException;
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Usuario;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IUsuarioService {
 
-    Usuario salvar(Usuario usuario);
+    UsuarioResponseDTO salvar(UsuarioRequestDTO usuario) throws InvalidDataException;
 
-    List<Usuario> buscarTodos();
+    List<UsuarioResponseDTO> buscarTodos() throws ResourceNotFoundException;
 
-    void excluir(Integer id);
+    void excluir(Integer id) throws ResourceNotFoundException;
 
-    Optional<Usuario> buscar(Integer id);
+    UsuarioResponseDTO buscar(Integer id) throws ResourceNotFoundException;
 
-    Optional<Usuario> buscarPorNome(String nome);
+    List<UsuarioResponseDTO> buscarPorNome(String nome) throws ResourceNotFoundException;
+    UsuarioResponseDTO buscarPorEmail(String email);
 
-    Usuario atualizar(Usuario usuario);
+    UsuarioResponseDTO atualizar(Usuario usuario) throws ResourceNotFoundException;
 
 }
