@@ -1,139 +1,80 @@
 package com.dh.clinica.controller;
 
+import com.dh.clinica.controller.dto.ConsultaResponseDTO;
+import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Consulta;
 import com.dh.clinica.service.impl.ConsultaServiceImpl;
-import com.dh.clinica.service.impl.DentistaServiceImpl;
-import com.dh.clinica.service.impl.PacienteServiceImpl;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
+@Slf4j
 @RestController
 @RequestMapping("/consultas")
 public class ConsultaController {
 
-    final static Logger log = Logger.getLogger(PacienteController.class);
-
-    @Autowired
-    private PacienteServiceImpl pacienteServiceImpl;
-
-    @Autowired
-    private DentistaServiceImpl dentistaServiceImpl;
-
-    @Autowired
     private ConsultaServiceImpl consultaServiceImpl;
 
+    @Autowired
+    public ConsultaController(ConsultaServiceImpl consultaServiceImpl) {
+        this.consultaServiceImpl = consultaServiceImpl;
+    }
 
     @PostMapping
-    public ResponseEntity<Consulta> cadastrar(@RequestBody Consulta consulta) throws ResourceNotFoundException {
+    public ResponseEntity<ConsultaResponseDTO> cadastrar(@RequestBody Consulta consulta) throws ResourceNotFoundException, InvalidDataException {
         log.info("Inciando método cadastrar...");
-        ResponseEntity<Consulta> response;
-        if (pacienteServiceImpl.buscar(consulta.getPaciente().getId()).isPresent()
-                && dentistaServiceImpl.buscar(consulta.getDentista().getId()) != null) {
-            log.info("Cadastrando Consulta: " + consulta.toString());
-            response = ResponseEntity.ok(consultaServiceImpl.salvar(consulta));
-        } else {
-            throw new ResourceNotFoundException("msg");
-        }
-        return response;
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.salvar(consulta));
     }
 
     @GetMapping
-    public ResponseEntity<List<Consulta>> buscarTodos() {
+    public ResponseEntity<List<ConsultaResponseDTO>> buscarTodos() throws ResourceNotFoundException {
         log.info("Inciando método buscarTodos...");
-        List<Consulta> consultas = consultaServiceImpl.buscarTodos();
-        if (!consultas.isEmpty()) {
-            log.info("Lista de Consulta encontrada: " + consultas.toString());
-            return ResponseEntity.ok(consultas);
-        } else {
-            log.info("Não há Consulta cadastrados");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.buscarTodos());
     }
 
+    /*
+    TODO
+    Método atualizar retornando erro 500
+     */
     @PutMapping
-    public ResponseEntity<Consulta> atualizar(@RequestBody Consulta consulta) {
+    public ResponseEntity<ConsultaResponseDTO> atualizar(@RequestBody Consulta consulta) throws ResourceNotFoundException {
         log.info("Inciando método atualizar...");
-        ResponseEntity<Consulta> response;
-        if (consulta.getId() != null && consultaServiceImpl.buscar(consulta.getId()).isPresent()) {
-            log.info("Atualizando consulta com o id: " + consulta.getId());
-            response = ResponseEntity.ok(consultaServiceImpl.atualizar(consulta));
-        } else {
-            log.info("Não foi encontrado nenhuma consulta com o id: " + consulta.getId());
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return response;
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.atualizar(consulta));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> excluir(@PathVariable Integer id) {
+    public ResponseEntity excluir(@PathVariable Integer id) throws ResourceNotFoundException {
         log.info("Inciando método excluir...");
-        ResponseEntity<String> response;
-        if (consultaServiceImpl.buscar(id).isPresent()) {
-            consultaServiceImpl.excluir(id);
-            response = ResponseEntity.status(HttpStatus.NO_CONTENT).body("Consulta apagada com sucesso!");
-        } else {
-            log.info("Não foi encontrado nenhuma Consulta com o id: " + id);
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return response;
+        consultaServiceImpl.excluir(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Consulta> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaResponseDTO> buscarPorId(@PathVariable Integer id) throws ResourceNotFoundException {
         log.info("Inciando método buscarPorId...");
-        Consulta consulta = consultaServiceImpl.buscar(id).orElse(null);
-        if (Objects.nonNull(consulta)) {
-            log.info("Consulta encontrada para o id informado: " + consulta.toString());
-            return ResponseEntity.ok(consulta);
-        } else {
-            log.info("Nenhuma Consulta foi encontrado para o id: " + id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.buscar(id));
     }
 
     @GetMapping("/paciente/{nome}")
-    public ResponseEntity<List<Consulta>> findConsultaByNomePaciente(@PathVariable String nome) {
+    public ResponseEntity<List<ConsultaResponseDTO>> findConsultaByNomePaciente(@PathVariable String nome) throws ResourceNotFoundException {
         log.info("Inciando método findConsultaByNomePaciente...");
-        List<Consulta> consultas = consultaServiceImpl.findConsultaByNomePaciente(nome);
-        if (Objects.nonNull(consultas)) {
-            log.info("Consultas encontrada para o paciente: " + consultas.toString());
-            return ResponseEntity.ok(consultas);
-        } else {
-            log.info("Nenhuma Consulta foi encontrado para o paciente: " + nome);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.findConsultaByNomePaciente(nome));
     }
 
     @GetMapping("/dentista/{nome}")
-    public ResponseEntity<List<Consulta>> findConsultaByNomeDentista(@PathVariable String nome) {
+    public ResponseEntity<List<ConsultaResponseDTO>> findConsultaByNomeDentista(@PathVariable String nome) throws ResourceNotFoundException {
         log.info("Inciando método findConsultaByNomeDentista...");
-        List<Consulta> consultas = consultaServiceImpl.findConsultaByNomeDentista(nome);
-        if (Objects.nonNull(consultas)) {
-            log.info("Consultas encontrada para o Dentista: " + consultas.toString());
-            return ResponseEntity.ok(consultas);
-        } else {
-            log.info("Nenhuma Consulta foi encontrado para o dentista: " + nome);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.findConsultaByNomeDentista(nome));
     }
 
     @GetMapping("/dentista/matricula/{matricula}")
-    public ResponseEntity<List<Consulta>> findConsultaByMatriculaDentista(@PathVariable String matricula) {
+    public ResponseEntity<List<ConsultaResponseDTO>> findConsultaByMatriculaDentista(@PathVariable String matricula) throws ResourceNotFoundException {
         log.info("Inciando método findConsultaByMatriculaDentista...");
-        List<Consulta> consultas = consultaServiceImpl.findByDentistaMatricula(matricula);
-        if (Objects.nonNull(consultas)) {
-            log.info("Consultas encontrada para o Dentista: " + consultas.toString());
-            return ResponseEntity.ok(consultas);
-        } else {
-            log.info("Nenhuma Consulta foi encontrado para o Dentista com matricula: " + matricula);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(consultaServiceImpl.findByDentistaMatricula(matricula));
     }
 }

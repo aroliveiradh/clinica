@@ -9,9 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DentistaRequest {
+public class DentistaResponseDTO {
 
     private String nome;
     private String sobrenome;
-    private String matricula;
 }

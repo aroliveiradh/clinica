@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsuarioRequest {
+public class UsuarioRequestDTO {
 
     private String nome;
 

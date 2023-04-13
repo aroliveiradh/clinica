@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsuarioResponse {
+public class UsuarioResponseDTO {
 
     private String nome;
 
