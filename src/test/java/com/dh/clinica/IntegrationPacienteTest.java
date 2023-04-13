@@ -1,6 +1,6 @@
 package com.dh.clinica;
 
-import com.dh.clinica.controller.dto.PacienteRequest;
+import com.dh.clinica.controller.dto.PacienteRequestDTO;
 import com.dh.clinica.model.Endereco;
 import com.dh.clinica.model.Paciente;
 import com.dh.clinica.service.impl.EnderecoServiceImpl;
@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -41,7 +40,7 @@ public class IntegrationPacienteTest {
         Endereco endereco = new Endereco("444", "Av Santa fe", "CABA", "Buenos Aires");
         Paciente paciente = new Paciente("Santiago", "Paz", "88888888", LocalDate.now(), endereco);
         mapper.registerModule(new JavaTimeModule());
-        pacienteService.salvar(mapper.convertValue(paciente, PacienteRequest.class));
+        pacienteService.salvar(mapper.convertValue(paciente, PacienteRequestDTO.class));
     }
     @Test
     public void listarPacientes() throws Exception {

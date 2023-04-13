@@ -1,7 +1,7 @@
 package com.dh.clinica.service;
 
-import com.dh.clinica.controller.dto.PacienteRequest;
-import com.dh.clinica.controller.dto.PacienteResponse;
+import com.dh.clinica.controller.dto.PacienteRequestDTO;
+import com.dh.clinica.controller.dto.PacienteResponseDTO;
 import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Paciente;
@@ -10,16 +10,16 @@ import java.util.List;
 
 public interface IPacienteService {
 
-    PacienteResponse salvar(PacienteRequest paciente) throws InvalidDataException;
+    PacienteResponseDTO salvar(PacienteRequestDTO paciente) throws InvalidDataException;
 
-    List<PacienteResponse> buscarTodos() throws ResourceNotFoundException;
+    List<PacienteResponseDTO> buscarTodos() throws ResourceNotFoundException;
 
     void excluir(Integer id) throws ResourceNotFoundException;
 
-    PacienteResponse buscar(Integer id) throws ResourceNotFoundException;
+    PacienteResponseDTO buscar(Integer id) throws ResourceNotFoundException;
 
-    PacienteResponse buscarPorNome(String nome) throws ResourceNotFoundException;
+    PacienteResponseDTO buscarPorNome(String nome) throws ResourceNotFoundException;
 
-    PacienteResponse atualizar(Paciente paciente) throws ResourceNotFoundException;
+    PacienteResponseDTO atualizar(Paciente paciente) throws ResourceNotFoundException;
 
 }

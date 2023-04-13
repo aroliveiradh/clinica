@@ -1,10 +1,6 @@
 package com.dh.clinica.controller.dto;
 
-import com.dh.clinica.model.Dentista;
-import com.dh.clinica.model.Paciente;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,11 +11,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ConsultaResponse {
+public class ConsultaResponseDTO {
 
-    private PacienteResponse pacienteResponse;
+    private PacienteResponseDTO pacienteResponseDTO;
 
-    private DentistaResponse dentistaResponse;
+    private DentistaResponseDTO dentistaResponseDTO;
 
     private LocalDateTime dataConsulta;
 }

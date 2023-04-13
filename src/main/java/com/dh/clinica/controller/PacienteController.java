@@ -1,14 +1,13 @@
 package com.dh.clinica.controller;
 
 
-import com.dh.clinica.controller.dto.PacienteRequest;
-import com.dh.clinica.controller.dto.PacienteResponse;
+import com.dh.clinica.controller.dto.PacienteRequestDTO;
+import com.dh.clinica.controller.dto.PacienteResponseDTO;
 import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Paciente;
 import com.dh.clinica.service.impl.PacienteServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +28,19 @@ public class PacienteController {
     }
 
     @PostMapping
-    public ResponseEntity<PacienteResponse> cadastrar(@RequestBody PacienteRequest pacienteRequest) throws InvalidDataException {
+    public ResponseEntity<PacienteResponseDTO> cadastrar(@RequestBody PacienteRequestDTO pacienteRequestDTO) throws InvalidDataException {
         log.info("Inciando método cadastrar...");
-        return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.salvar(pacienteRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.salvar(pacienteRequestDTO));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PacienteResponse> buscarPorId(@PathVariable Integer id) throws ResourceNotFoundException {
+    public ResponseEntity<PacienteResponseDTO> buscarPorId(@PathVariable Integer id) throws ResourceNotFoundException {
         log.info("Inciando método buscarPorId...");
         return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.buscar(id));
     }
 
     @PutMapping
-    public ResponseEntity<PacienteResponse> atualizar(@RequestBody Paciente paciente) throws Exception {
+    public ResponseEntity<PacienteResponseDTO> atualizar(@RequestBody Paciente paciente) throws Exception {
         log.info("Inciando método atualizar...");
         return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.atualizar(paciente));
     }
@@ -54,13 +53,13 @@ public class PacienteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PacienteResponse>> buscarTodos() throws ResourceNotFoundException {
+    public ResponseEntity<List<PacienteResponseDTO>> buscarTodos() throws ResourceNotFoundException {
         log.info("Inciando método buscarTodos...");
         return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.buscarTodos());
     }
 
     @GetMapping("/nome/{nome}")
-    public ResponseEntity<PacienteResponse> buscarPorNome(@PathVariable String nome) throws ResourceNotFoundException {
+    public ResponseEntity<PacienteResponseDTO> buscarPorNome(@PathVariable String nome) throws ResourceNotFoundException {
         log.info("Inciando método buscarPorNome...");
         return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.buscarPorNome(nome));
     }

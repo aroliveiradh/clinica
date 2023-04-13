@@ -1,8 +1,8 @@
 package com.dh.clinica.service.impl;
 
-import com.dh.clinica.controller.dto.ConsultaResponse;
-import com.dh.clinica.controller.dto.DentistaResponse;
-import com.dh.clinica.controller.dto.PacienteResponse;
+import com.dh.clinica.controller.dto.ConsultaResponseDTO;
+import com.dh.clinica.controller.dto.DentistaResponseDTO;
+import com.dh.clinica.controller.dto.PacienteResponseDTO;
 import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Consulta;
@@ -36,7 +36,7 @@ public class ConsultaServiceImpl implements IConsultaService {
     }
 
     @Override
-    public ConsultaResponse salvar(Consulta consulta) throws InvalidDataException {
+    public ConsultaResponseDTO salvar(Consulta consulta) throws InvalidDataException {
         if (pacienteRepository.findById(consulta.getPaciente().getId()) != null
                 && dentistaRepository.findById(consulta.getDentista().getId()) != null) {
             return toConsultaResponse(consultaRepository.save(consulta));
@@ -46,14 +46,14 @@ public class ConsultaServiceImpl implements IConsultaService {
     }
 
     @Override
-    public List<ConsultaResponse> buscarTodos() throws ResourceNotFoundException {
+    public List<ConsultaResponseDTO> buscarTodos() throws ResourceNotFoundException {
         List<Consulta> consultaList = consultaRepository.findAll();
-        List<ConsultaResponse> consultaResponseList = new ArrayList<>();
+        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaList.isEmpty()) {
             for (Consulta consulta : consultaList) {
-                consultaResponseList.add(toConsultaResponse(consulta));
+                consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
-            return consultaResponseList;
+            return consultaResponseDTOList;
         } else {
             throw new ResourceNotFoundException("Não há Consultas cadastradas!");
         }
@@ -70,7 +70,7 @@ public class ConsultaServiceImpl implements IConsultaService {
     }
 
     @Override
-    public ConsultaResponse buscar(Integer id) throws ResourceNotFoundException {
+    public ConsultaResponseDTO buscar(Integer id) throws ResourceNotFoundException {
         Consulta consutaEntity = consultaRepository.findById(id).orElse(null);
         if (Objects.nonNull(consutaEntity)) {
             return toConsultaResponse(consutaEntity);
@@ -85,7 +85,7 @@ public class ConsultaServiceImpl implements IConsultaService {
 //    }
 
     @Override
-    public ConsultaResponse atualizar(Consulta consulta) throws ResourceNotFoundException {
+    public ConsultaResponseDTO atualizar(Consulta consulta) throws ResourceNotFoundException {
         if (consulta.getId() != null && consultaRepository.findById(consulta.getId()).isPresent()) {
             return toConsultaResponse(consultaRepository.save(consulta));
         } else {
@@ -94,52 +94,52 @@ public class ConsultaServiceImpl implements IConsultaService {
     }
 
     @Override
-    public List<ConsultaResponse> findConsultaByNomeDentista(String nome) throws ResourceNotFoundException {
+    public List<ConsultaResponseDTO> findConsultaByNomeDentista(String nome) throws ResourceNotFoundException {
         List<Consulta> consultaEntityList = consultaRepository.findByDentistaNome(nome);
-        List<ConsultaResponse> consultaResponseList = new ArrayList<>();
+        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaEntityList.isEmpty()) {
             for (Consulta consulta : consultaEntityList) {
-                consultaResponseList.add(toConsultaResponse(consulta));
+                consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
-            return consultaResponseList;
+            return consultaResponseDTOList;
         } else {
             throw new ResourceNotFoundException("Não foi encontrado nenhuma Consulta para o Nome do Dentista informado!");
         }
     }
 
     @Override
-    public List<ConsultaResponse> findByDentistaMatricula(String matricula) throws ResourceNotFoundException {
+    public List<ConsultaResponseDTO> findByDentistaMatricula(String matricula) throws ResourceNotFoundException {
         List<Consulta> consultaEntityList = consultaRepository.findByDentistaMatricula(matricula);
-        List<ConsultaResponse> consultaResponseList = new ArrayList<>();
+        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaEntityList.isEmpty()) {
             for (Consulta consulta : consultaEntityList) {
-                consultaResponseList.add(toConsultaResponse(consulta));
+                consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
-            return consultaResponseList;
+            return consultaResponseDTOList;
         } else {
             throw new ResourceNotFoundException("Não foi encontrado nenhuma Consulta para a Matricula do Dentista informada!");
         }
     }
 
     @Override
-    public List<ConsultaResponse> findConsultaByNomePaciente(String nome) throws ResourceNotFoundException {
+    public List<ConsultaResponseDTO> findConsultaByNomePaciente(String nome) throws ResourceNotFoundException {
         List<Consulta> consultaEntityList = consultaRepository.findByPacienteNome(nome);
-        List<ConsultaResponse> consultaResponseList = new ArrayList<>();
+        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaEntityList.isEmpty()) {
             for (Consulta consulta : consultaEntityList) {
-                consultaResponseList.add(toConsultaResponse(consulta));
+                consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
-            return consultaResponseList;
+            return consultaResponseDTOList;
         } else {
             throw new ResourceNotFoundException("Não foi encontrado nenhuma Consulta para o Nome do Paciente informado!");
         }
     }
 
-    private ConsultaResponse toConsultaResponse(Consulta consulta) {
+    private ConsultaResponseDTO toConsultaResponse(Consulta consulta) {
         mapper.registerModule(new JavaTimeModule());
-        return ConsultaResponse.builder()
-                .pacienteResponse(mapper.convertValue(consulta.getPaciente(), PacienteResponse.class))
-                .dentistaResponse(mapper.convertValue(consulta.getDentista(), DentistaResponse.class))
+        return ConsultaResponseDTO.builder()
+                .pacienteResponseDTO(mapper.convertValue(consulta.getPaciente(), PacienteResponseDTO.class))
+                .dentistaResponseDTO(mapper.convertValue(consulta.getDentista(), DentistaResponseDTO.class))
                 .dataConsulta(consulta.getDataConsulta())
                 .build();
     }

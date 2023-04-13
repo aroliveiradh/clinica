@@ -1,8 +1,8 @@
 package com.dh.clinica.service.impl;
 
 
-import com.dh.clinica.controller.dto.PacienteRequest;
-import com.dh.clinica.controller.dto.PacienteResponse;
+import com.dh.clinica.controller.dto.PacienteRequestDTO;
+import com.dh.clinica.controller.dto.PacienteResponseDTO;
 import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Paciente;
@@ -28,43 +28,43 @@ public class PacienteServiceImpl implements IPacienteService {
         this.pacienteRepository = pacienteRepository;
     }
 
-    public PacienteResponse salvar(PacienteRequest pacienteRequest) throws InvalidDataException {
-        if (validaEnderecoDTO(pacienteRequest)) {
+    public PacienteResponseDTO salvar(PacienteRequestDTO pacienteRequestDTO) throws InvalidDataException {
+        if (validaEnderecoDTO(pacienteRequestDTO)) {
             mapper.registerModule(new JavaTimeModule());
-            Paciente pacienteEntity = mapper.convertValue(pacienteRequest, Paciente.class);
+            Paciente pacienteEntity = mapper.convertValue(pacienteRequestDTO, Paciente.class);
             Paciente pacienteSalvo = pacienteRepository.save(pacienteEntity);
-            PacienteResponse pacienteResponse = mapper.convertValue(pacienteSalvo, PacienteResponse.class);
-            return pacienteResponse;
+            PacienteResponseDTO pacienteResponseDTO = mapper.convertValue(pacienteSalvo, PacienteResponseDTO.class);
+            return pacienteResponseDTO;
         } else {
             throw new InvalidDataException("Não foi possível cadastrar um novo Paciente!");
         }
     }
 
-    public PacienteResponse buscar(Integer id) throws ResourceNotFoundException {
+    public PacienteResponseDTO buscar(Integer id) throws ResourceNotFoundException {
         Paciente paciente = pacienteRepository.findById(id).orElse(null);
         if (Objects.nonNull(paciente)) {
-            return mapper.convertValue(paciente, PacienteResponse.class);
+            return mapper.convertValue(paciente, PacienteResponseDTO.class);
         } else {
             throw new ResourceNotFoundException("Nenhum paciente foi encontrado para o Id informado!");
         }
     }
 
     @Override
-    public PacienteResponse buscarPorNome(String nome) throws ResourceNotFoundException {
+    public PacienteResponseDTO buscarPorNome(String nome) throws ResourceNotFoundException {
         Paciente paciente = pacienteRepository.findPacienteByNomeContainingIgnoreCase(nome);
         if (Objects.nonNull(paciente)) {
-            return mapper.convertValue(paciente, PacienteResponse.class);
+            return mapper.convertValue(paciente, PacienteResponseDTO.class);
         } else {
             throw new ResourceNotFoundException("Nenhum paciente foi encontrado para o Id informado!");
         }
     }
 
-    public List<PacienteResponse> buscarTodos() throws ResourceNotFoundException {
+    public List<PacienteResponseDTO> buscarTodos() throws ResourceNotFoundException {
         List<Paciente> pacientes = pacienteRepository.findAll();
-        List<PacienteResponse> listaDentistaResponse = new ArrayList<>();
+        List<PacienteResponseDTO> listaDentistaResponse = new ArrayList<>();
         if (!pacientes.isEmpty()) {
             for (Paciente paciente : pacientes) {
-                listaDentistaResponse.add(mapper.convertValue(paciente, PacienteResponse.class));
+                listaDentistaResponse.add(mapper.convertValue(paciente, PacienteResponseDTO.class));
                 return listaDentistaResponse;
             }
         }
@@ -79,32 +79,32 @@ public class PacienteServiceImpl implements IPacienteService {
         }
     }
 
-    public PacienteResponse atualizar(Paciente paciente) throws ResourceNotFoundException {
+    public PacienteResponseDTO atualizar(Paciente paciente) throws ResourceNotFoundException {
         if (paciente.getId() != null && pacienteRepository.findById(paciente.getId()) != null) {
             Paciente pacienteSalvo = pacienteRepository.save(paciente);
             mapper.registerModule(new JavaTimeModule());
-            PacienteResponse pacienteResponse = mapper.convertValue(pacienteSalvo, PacienteResponse.class);
-            return pacienteResponse;
+            PacienteResponseDTO pacienteResponseDTO = mapper.convertValue(pacienteSalvo, PacienteResponseDTO.class);
+            return pacienteResponseDTO;
         } else {
             throw new ResourceNotFoundException("Não há registro de Paciente com o Id informado!");
         }
 
     }
 
-    private static boolean validaEnderecoDTO(PacienteRequest pacienteRequest) {
-        return Objects.nonNull(pacienteRequest.getEndereco()) &&
-                Objects.nonNull(pacienteRequest.getEndereco().getCidade()) &&
-                !pacienteRequest.getEndereco().getCidade().isEmpty() &&
-                !pacienteRequest.getEndereco().getCidade().isBlank() &&
-                Objects.nonNull(pacienteRequest.getEndereco().getRua()) &&
-                !pacienteRequest.getEndereco().getRua().isEmpty() &&
-                !pacienteRequest.getEndereco().getRua().isBlank() &&
-                Objects.nonNull(pacienteRequest.getEndereco().getNumero()) &&
-                !pacienteRequest.getEndereco().getNumero().isEmpty() &&
-                !pacienteRequest.getEndereco().getNumero().isBlank() &&
-                Objects.nonNull(pacienteRequest.getEndereco().getEstado()) &&
-                !pacienteRequest.getEndereco().getEstado().isEmpty() &&
-                !pacienteRequest.getEndereco().getEstado().isBlank();
+    private static boolean validaEnderecoDTO(PacienteRequestDTO pacienteRequestDTO) {
+        return Objects.nonNull(pacienteRequestDTO.getEndereco()) &&
+                Objects.nonNull(pacienteRequestDTO.getEndereco().getCidade()) &&
+                !pacienteRequestDTO.getEndereco().getCidade().isEmpty() &&
+                !pacienteRequestDTO.getEndereco().getCidade().isBlank() &&
+                Objects.nonNull(pacienteRequestDTO.getEndereco().getRua()) &&
+                !pacienteRequestDTO.getEndereco().getRua().isEmpty() &&
+                !pacienteRequestDTO.getEndereco().getRua().isBlank() &&
+                Objects.nonNull(pacienteRequestDTO.getEndereco().getNumero()) &&
+                !pacienteRequestDTO.getEndereco().getNumero().isEmpty() &&
+                !pacienteRequestDTO.getEndereco().getNumero().isBlank() &&
+                Objects.nonNull(pacienteRequestDTO.getEndereco().getEstado()) &&
+                !pacienteRequestDTO.getEndereco().getEstado().isEmpty() &&
+                !pacienteRequestDTO.getEndereco().getEstado().isBlank();
     }
 
 }

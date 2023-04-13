@@ -1,7 +1,8 @@
 package com.dh.clinica;
 
-import com.dh.clinica.controller.dto.DentistaRequest;
-import com.dh.clinica.controller.dto.DentistaResponse;
+import com.dh.clinica.controller.dto.DentistaRequestDTO;
+import com.dh.clinica.controller.dto.DentistaResponseDTO;
+import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.service.impl.DentistaServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -38,14 +39,14 @@ class IntegrationDentistaTest {
     @MockBean
     private DentistaServiceImpl dentistaService;
 
-    void loadDataSet() {
-        this.dentistaService.salvar(new DentistaRequest("Ana", "Marta", "123"));
+    void loadDataSet() throws ResourceNotFoundException {
+        this.dentistaService.salvar(new DentistaRequestDTO("Ana", "Marta", "123"));
     }
 
     @Test
     void deveCadastrarDentistaComSucesso() throws Exception {
-        DentistaRequest payLoadDto = new DentistaRequest("Ana", "Marta", "123");
-        DentistaResponse responseDto = new DentistaResponse("Ana", "Marta");
+        DentistaRequestDTO payLoadDto = new DentistaRequestDTO("Ana", "Marta", "123");
+        DentistaResponseDTO responseDto = new DentistaResponseDTO("Ana", "Marta");
 
         Mockito.when(dentistaService.salvar(Mockito.any())).thenReturn(responseDto);
 
@@ -94,8 +95,8 @@ class IntegrationDentistaTest {
 
     }
 
-    private DentistaRequest criaDentistaRequestMock() {
-        return DentistaRequest.builder()
+    private DentistaRequestDTO criaDentistaRequestMock() {
+        return DentistaRequestDTO.builder()
                 .nome("Ana")
                 .sobrenome("Maria")
                 .matricula("123456")

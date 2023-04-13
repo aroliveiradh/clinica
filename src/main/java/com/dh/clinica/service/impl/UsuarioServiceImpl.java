@@ -1,7 +1,7 @@
 package com.dh.clinica.service.impl;
 
-import com.dh.clinica.controller.dto.UsuarioRequest;
-import com.dh.clinica.controller.dto.UsuarioResponse;
+import com.dh.clinica.controller.dto.UsuarioRequestDTO;
+import com.dh.clinica.controller.dto.UsuarioResponseDTO;
 import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.exception.ResourceNotFoundException;
 import com.dh.clinica.model.Usuario;
@@ -10,6 +10,7 @@ import com.dh.clinica.service.IUsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,22 +30,25 @@ public class UsuarioServiceImpl implements IUsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public UsuarioResponse salvar(UsuarioRequest request) throws InvalidDataException {
+    public UsuarioResponseDTO salvar(UsuarioRequestDTO request) throws InvalidDataException {
         if (validarUsuario(request)) {
-            Usuario usuario = mapper.convertValue(request, Usuario.class);
-            Usuario usuarioSalvo = usuarioRepository.save(usuario);
-            return mapper.convertValue(usuarioSalvo, UsuarioResponse.class);
+            Usuario usuarioEntity = mapper.convertValue(request, Usuario.class);
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            String senhaCriptografada = encoder.encode(usuarioEntity.getSenha());
+            usuarioEntity.setSenha(senhaCriptografada);
+            Usuario usuarioSalvo = usuarioRepository.save(usuarioEntity);
+            return mapper.convertValue(usuarioSalvo, UsuarioResponseDTO.class);
         } else {
             throw new InvalidDataException("Não foi possível cadastrar o novo Usuário!");
         }
     }
 
-    public List<UsuarioResponse> buscarTodos() throws ResourceNotFoundException {
+    public List<UsuarioResponseDTO> buscarTodos() throws ResourceNotFoundException {
         List<Usuario> usuarios = usuarioRepository.findAll();
-        List<UsuarioResponse> response = new ArrayList<>();
+        List<UsuarioResponseDTO> response = new ArrayList<>();
         if (!usuarios.isEmpty()) {
             for (Usuario usuario : usuarios) {
-                response.add(mapper.convertValue(usuario, UsuarioResponse.class));
+                response.add(mapper.convertValue(usuario, UsuarioResponseDTO.class));
             }
             return response;
         } else {
@@ -52,7 +56,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         }
     }
 
-    public UsuarioResponse buscar(Integer id) throws ResourceNotFoundException {
+    public UsuarioResponseDTO buscar(Integer id) throws ResourceNotFoundException {
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
         if (Objects.nonNull(usuario)) {
             return toUsuarioResponse(usuario);
@@ -62,24 +66,24 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public List<UsuarioResponse> buscarPorNome(String nome) throws ResourceNotFoundException {
+    public List<UsuarioResponseDTO> buscarPorNome(String nome) throws ResourceNotFoundException {
         List<Usuario> usuarios = usuarioRepository.findUsuarioByNomeContainingIgnoreCase(nome);
-        List<UsuarioResponse> usuarioResponseList = new ArrayList<>();
+        List<UsuarioResponseDTO> usuarioResponseDTOList = new ArrayList<>();
         if (!usuarios.isEmpty()) {
             for (Usuario usuario : usuarios) {
-                usuarioResponseList.add(toUsuarioResponse(usuario));
+                usuarioResponseDTOList.add(toUsuarioResponse(usuario));
             }
-            return usuarioResponseList;
+            return usuarioResponseDTOList;
         } else {
             throw new ResourceNotFoundException("Não há Usuários cadastrados para o Nome informado!");
         }
     }
 
     @Override
-    public UsuarioResponse buscarPorEmail(String email) {
+    public UsuarioResponseDTO buscarPorEmail(String email) {
         Usuario usuario = usuarioRepository.findUsuarioByEmailContainingIgnoreCase(email);
-        UsuarioResponse usuarioResponse = toUsuarioResponse(usuario);
-        return usuarioResponse;
+        UsuarioResponseDTO usuarioResponseDTO = toUsuarioResponse(usuario);
+        return usuarioResponseDTO;
     }
 
     public void excluir(Integer id) throws ResourceNotFoundException {
@@ -90,25 +94,25 @@ public class UsuarioServiceImpl implements IUsuarioService {
         }
     }
 
-    public UsuarioResponse atualizar(Usuario usuario) throws ResourceNotFoundException {
+    public UsuarioResponseDTO atualizar(Usuario usuario) throws ResourceNotFoundException {
         if (usuario.getId() != null
                 && usuarioRepository.findById(usuario.getId()) != null) {
-            UsuarioResponse usuarioResponse = mapper.convertValue(usuarioRepository.save(usuario), UsuarioResponse.class);
-            return usuarioResponse;
+            UsuarioResponseDTO usuarioResponseDTO = mapper.convertValue(usuarioRepository.save(usuario), UsuarioResponseDTO.class);
+            return usuarioResponseDTO;
         } else {
             throw new ResourceNotFoundException("Não há Usuário cadastrados para o Email informado!");
         }
     }
 
-    private UsuarioResponse toUsuarioResponse(Usuario usuario) {
-        return UsuarioResponse.builder()
+    private UsuarioResponseDTO toUsuarioResponse(Usuario usuario) {
+        return UsuarioResponseDTO.builder()
                 .nome(usuario.getNome())
                 .email(usuario.getEmail())
                 .nivelAcesso(usuario.isNivelAcesso())
                 .build();
     }
 
-    private boolean validarUsuario(UsuarioRequest usuario) {
+    private boolean validarUsuario(UsuarioRequestDTO usuario) {
         return Objects.nonNull(usuario) &&
                 Objects.nonNull(usuario.getNome()) &&
                 !usuario.getNome().isEmpty() &&
