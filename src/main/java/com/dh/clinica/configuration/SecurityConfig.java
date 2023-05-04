@@ -8,7 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,6 +31,16 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/usuarios/cadastrar").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/consultas").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/consultas").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/consultas").permitAll()
+                .requestMatchers(HttpMethod.GET, "/consultas").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/pacientes","/dentistas","/usuarios").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE,"/pacientes","/dentistas","/usuarios").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT,"/pacientes","/dentistas","/usuarios").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,"/pacientes","/dentistas","/usuarios").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
                 .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

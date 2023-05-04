@@ -31,19 +31,23 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     public UsuarioResponseDTO salvar(UsuarioRequestDTO request) throws InvalidDataException {
-        if (validarUsuario(request)) {
-            Usuario usuarioEntity = mapper.convertValue(request, Usuario.class);
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            String senhaCriptografada = encoder.encode(usuarioEntity.getSenha());
-            usuarioEntity.setSenha(senhaCriptografada);
-            Usuario usuarioSalvo = usuarioRepository.save(usuarioEntity);
-            return mapper.convertValue(usuarioSalvo, UsuarioResponseDTO.class);
-        } else {
-            throw new InvalidDataException("Não foi possível cadastrar o novo Usuário!");
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            log.info("Erro ao cadastrar usuário: Já existe um usuario cadastrado com este e-mail");
+            throw new InvalidDataException("Já existe um usuario cadastrado com este e-mail");
         }
+        log.info("Iniciando processo para salvar um novo Usuario...");
+        Usuario usuarioEntity = mapper.convertValue(request, Usuario.class);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String senhaCriptografada = encoder.encode(usuarioEntity.getSenha());
+        usuarioEntity.setSenha(senhaCriptografada);
+        Usuario usuarioSalvo = usuarioRepository.save(usuarioEntity);
+        log.info("Usuario salvo com successo: "+ request);;
+        return mapper.convertValue(usuarioSalvo, UsuarioResponseDTO.class);
+
     }
 
     public List<UsuarioResponseDTO> buscarTodos() throws ResourceNotFoundException {
+        log.info("Buscando todos Usuarios cadastrados...");
         List<Usuario> usuarios = usuarioRepository.findAll();
         List<UsuarioResponseDTO> response = new ArrayList<>();
         if (!usuarios.isEmpty()) {
@@ -57,6 +61,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     public UsuarioResponseDTO buscar(Integer id) throws ResourceNotFoundException {
+        log.info("Buscando Usuario cadastrado com id: " + id);
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
         if (Objects.nonNull(usuario)) {
             return toUsuarioResponse(usuario);
@@ -67,7 +72,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public List<UsuarioResponseDTO> buscarPorNome(String nome) throws ResourceNotFoundException {
-        List<Usuario> usuarios = usuarioRepository.findUsuarioByNomeContainingIgnoreCase(nome);
+        log.info("Buscando Usuario cadastrado com nome: " + nome);
+        List<Usuario> usuarios = usuarioRepository.findUsuarioByLoginContainingIgnoreCase(nome);
         List<UsuarioResponseDTO> usuarioResponseDTOList = new ArrayList<>();
         if (!usuarios.isEmpty()) {
             for (Usuario usuario : usuarios) {
@@ -80,14 +86,19 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public UsuarioResponseDTO buscarPorEmail(String email) {
+    public UsuarioResponseDTO buscarPorEmail(String email) throws ResourceNotFoundException {
+        log.info("Buscando Usuario cadastrado com email: " + email);
         Usuario usuario = usuarioRepository.findUsuarioByEmailContainingIgnoreCase(email);
-        UsuarioResponseDTO usuarioResponseDTO = toUsuarioResponse(usuario);
-        return usuarioResponseDTO;
+        if (Objects.nonNull(usuario)) {
+            return toUsuarioResponse(usuario);
+        } else {
+            throw new ResourceNotFoundException("Não há Usuário cadastrados para o e-mail informado!");
+        }
     }
 
     public void excluir(Integer id) throws ResourceNotFoundException {
         if (usuarioRepository.findById(id).isPresent()) {
+            log.info("Excluindo registro de Usuario com id: " + id);
             usuarioRepository.deleteById(id);
         } else {
             throw new ResourceNotFoundException("Não há Usuário cadastrados para o Id informado!");
@@ -106,23 +117,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     private UsuarioResponseDTO toUsuarioResponse(Usuario usuario) {
         return UsuarioResponseDTO.builder()
-                .nome(usuario.getNome())
+                .login(usuario.getLogin())
                 .email(usuario.getEmail())
-                .nivelAcesso(usuario.isNivelAcesso())
+                .nivelAcesso(usuario.getNivelAcesso().toString())
                 .build();
-    }
-
-    private boolean validarUsuario(UsuarioRequestDTO usuario) {
-        return Objects.nonNull(usuario) &&
-                Objects.nonNull(usuario.getNome()) &&
-                !usuario.getNome().isEmpty() &&
-                !usuario.getNome().isBlank() &&
-                Objects.nonNull(usuario.getEmail()) &&
-                !usuario.getEmail().isEmpty() &&
-                !usuario.getEmail().isBlank() &&
-                Objects.nonNull(usuario.getSenha()) &&
-                !usuario.getSenha().isEmpty() &&
-                !usuario.getSenha().isBlank() &&
-                Objects.nonNull(usuario.isNivelAcesso());
     }
 }

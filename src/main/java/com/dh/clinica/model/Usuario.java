@@ -1,19 +1,16 @@
 package com.dh.clinica.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.dh.clinica.security.UsuarioRole;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 
 @Getter
@@ -21,33 +18,29 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
+@ToString
 public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String nome;
-
+    @NotNull
+    @Column(unique = true)
+    private String login;
+    @NotNull
+    @Email
     private String email;
-
+    @NotNull
     private String senha;
-
-    private boolean nivelAcesso;
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
-                ", nivelAcesso=" + nivelAcesso +
-                '}';
-    }
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UsuarioRole nivelAcesso;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(nivelAcesso.name());
+        return Collections.singleton(grantedAuthority);
     }
 
     @Override

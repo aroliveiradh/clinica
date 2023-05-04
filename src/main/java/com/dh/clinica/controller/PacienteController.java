@@ -61,6 +61,11 @@ public class PacienteController {
     @GetMapping("/nome/{nome}")
     public ResponseEntity<PacienteResponseDTO> buscarPorNome(@PathVariable String nome) throws ResourceNotFoundException {
         log.info("Inciando método buscarPorNome...");
-        return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.buscarPorNome(nome));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(pacienteServiceImpl.buscarPorNome(nome));
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

@@ -11,9 +11,9 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UsuarioResponseDTO {
 
-    private String nome;
+    private String login;
 
     private String email;
 
-    private boolean nivelAcesso;
+    private String nivelAcesso;
 }

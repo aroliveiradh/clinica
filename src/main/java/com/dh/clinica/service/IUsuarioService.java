@@ -19,7 +19,7 @@ public interface IUsuarioService {
     UsuarioResponseDTO buscar(Integer id) throws ResourceNotFoundException;
 
     List<UsuarioResponseDTO> buscarPorNome(String nome) throws ResourceNotFoundException;
-    UsuarioResponseDTO buscarPorEmail(String email);
+    UsuarioResponseDTO buscarPorEmail(String email) throws ResourceNotFoundException;
 
     UsuarioResponseDTO atualizar(Usuario usuario) throws ResourceNotFoundException;
 

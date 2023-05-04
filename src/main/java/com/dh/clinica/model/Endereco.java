@@ -1,44 +1,38 @@
 package com.dh.clinica.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String rua;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String numero;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String cidade;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String estado;
 
-    public Endereco(String rua, String numero, String cidade, String estado) {
-        this.rua = rua;
-        this.numero = numero;
-        this.cidade = cidade;
-        this.estado = estado;
-    }
-
-    @Override
-    public String toString() {
-        return "Endereco{" +
-                "id=" + id +
-                ", rua='" + rua + '\'' +
-                ", numero='" + numero + '\'' +
-                ", cidade='" + cidade + '\'' +
-                ", estado='" + estado + '\'' +
-                '}';
-    }
 }

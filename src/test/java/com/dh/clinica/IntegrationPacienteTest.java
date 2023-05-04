@@ -1,6 +1,7 @@
 package com.dh.clinica;
 
 import com.dh.clinica.controller.dto.PacienteRequestDTO;
+import com.dh.clinica.exception.InvalidDataException;
 import com.dh.clinica.model.Endereco;
 import com.dh.clinica.model.Paciente;
 import com.dh.clinica.service.impl.EnderecoServiceImpl;
@@ -36,7 +37,7 @@ public class IntegrationPacienteTest {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    public void cargarDataSet() {
+    public void cargarDataSet() throws InvalidDataException {
         Endereco endereco = new Endereco("444", "Av Santa fe", "CABA", "Buenos Aires");
         Paciente paciente = new Paciente("Santiago", "Paz", "88888888", LocalDate.now(), endereco);
         mapper.registerModule(new JavaTimeModule());

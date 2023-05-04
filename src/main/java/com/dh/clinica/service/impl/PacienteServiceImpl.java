@@ -43,6 +43,7 @@ public class PacienteServiceImpl implements IPacienteService {
     public PacienteResponseDTO buscar(Integer id) throws ResourceNotFoundException {
         Paciente paciente = pacienteRepository.findById(id).orElse(null);
         if (Objects.nonNull(paciente)) {
+            mapper.registerModule(new JavaTimeModule());
             return mapper.convertValue(paciente, PacienteResponseDTO.class);
         } else {
             throw new ResourceNotFoundException("Nenhum paciente foi encontrado para o Id informado!");
@@ -53,6 +54,7 @@ public class PacienteServiceImpl implements IPacienteService {
     public PacienteResponseDTO buscarPorNome(String nome) throws ResourceNotFoundException {
         Paciente paciente = pacienteRepository.findPacienteByNomeContainingIgnoreCase(nome);
         if (Objects.nonNull(paciente)) {
+            mapper.registerModule(new JavaTimeModule());
             return mapper.convertValue(paciente, PacienteResponseDTO.class);
         } else {
             throw new ResourceNotFoundException("Nenhum paciente foi encontrado para o Id informado!");
@@ -63,10 +65,11 @@ public class PacienteServiceImpl implements IPacienteService {
         List<Paciente> pacientes = pacienteRepository.findAll();
         List<PacienteResponseDTO> listaDentistaResponse = new ArrayList<>();
         if (!pacientes.isEmpty()) {
+            mapper.registerModule(new JavaTimeModule());
             for (Paciente paciente : pacientes) {
                 listaDentistaResponse.add(mapper.convertValue(paciente, PacienteResponseDTO.class));
-                return listaDentistaResponse;
             }
+            return listaDentistaResponse;
         }
         throw new ResourceNotFoundException("Não há Pacientes cadastrados!");
     }

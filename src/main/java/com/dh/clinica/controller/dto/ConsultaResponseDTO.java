@@ -17,5 +17,5 @@ public class ConsultaResponseDTO {
 
     private DentistaResponseDTO dentistaResponseDTO;
 
-    private LocalDateTime dataConsulta;
+    private LocalDateTime dataHoraConsulta;
 }

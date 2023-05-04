@@ -48,8 +48,8 @@ public class ConsultaServiceImpl implements IConsultaService {
     @Override
     public List<ConsultaResponseDTO> buscarTodos() throws ResourceNotFoundException {
         List<Consulta> consultaList = consultaRepository.findAll();
-        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaList.isEmpty()) {
+            List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
             for (Consulta consulta : consultaList) {
                 consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
@@ -96,8 +96,8 @@ public class ConsultaServiceImpl implements IConsultaService {
     @Override
     public List<ConsultaResponseDTO> findConsultaByNomeDentista(String nome) throws ResourceNotFoundException {
         List<Consulta> consultaEntityList = consultaRepository.findByDentistaNome(nome);
-        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaEntityList.isEmpty()) {
+            List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
             for (Consulta consulta : consultaEntityList) {
                 consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
@@ -110,8 +110,8 @@ public class ConsultaServiceImpl implements IConsultaService {
     @Override
     public List<ConsultaResponseDTO> findByDentistaMatricula(String matricula) throws ResourceNotFoundException {
         List<Consulta> consultaEntityList = consultaRepository.findByDentistaMatricula(matricula);
-        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaEntityList.isEmpty()) {
+            List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
             for (Consulta consulta : consultaEntityList) {
                 consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
@@ -124,8 +124,8 @@ public class ConsultaServiceImpl implements IConsultaService {
     @Override
     public List<ConsultaResponseDTO> findConsultaByNomePaciente(String nome) throws ResourceNotFoundException {
         List<Consulta> consultaEntityList = consultaRepository.findByPacienteNome(nome);
-        List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
         if (!consultaEntityList.isEmpty()) {
+            List<ConsultaResponseDTO> consultaResponseDTOList = new ArrayList<>();
             for (Consulta consulta : consultaEntityList) {
                 consultaResponseDTOList.add(toConsultaResponse(consulta));
             }
@@ -140,7 +140,7 @@ public class ConsultaServiceImpl implements IConsultaService {
         return ConsultaResponseDTO.builder()
                 .pacienteResponseDTO(mapper.convertValue(consulta.getPaciente(), PacienteResponseDTO.class))
                 .dentistaResponseDTO(mapper.convertValue(consulta.getDentista(), DentistaResponseDTO.class))
-                .dataConsulta(consulta.getDataConsulta())
+                .dataHoraConsulta(consulta.getDataHoraConsulta())
                 .build();
     }
 }

@@ -14,12 +14,16 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
+    /*
+    TODO
+    Ajustar secret, pegando info do properties
+     */
     public String gerarToken(Usuario usuario) {
         try {
             Algorithm algorithm = Algorithm.HMAC256("2313246546");
             return JWT.create()
-                    .withIssuer("API Loja")
-                    .withSubject(usuario.getEmail())
+                    .withIssuer("API Clinica")
+                    .withSubject(usuario.getLogin())
                     .withExpiresAt(dataExpiracao())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
@@ -35,7 +39,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256("2313246546");
             return JWT.require(algorithm)
-                    .withIssuer("API Loja")
+                    .withIssuer("API Clinica")
                     .build()
                     .verify(tokenJWT)
                     .getSubject();

@@ -1,11 +1,12 @@
 package com.dh.clinica.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -14,36 +15,28 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Paciente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String nome;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String sobrenome;
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String rg;
     private LocalDate dataCadastro = LocalDate.now();
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "endereco_id")
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id",referencedColumnName = "id")
     private Endereco endereco;
-
-    public Paciente(String nome, String sobrenome, String rg, LocalDate dataCadastro, Endereco endereco) {
-        this.nome = nome;
-        this.sobrenome = sobrenome;
-        this.rg = rg;
-        this.dataCadastro = dataCadastro;
-        this.endereco = endereco;
-    }
-
-    @Override
-    public String toString() {
-        return "Paciente{" +
-                "nome='" + nome + '\'' +
-                ", sobrenome='" + sobrenome + '\'' +
-                ", rg='" + rg + '\'' +
-                ", dataCadastro=" + dataCadastro +
-                ", endereco=" + endereco +
-                '}';
-    }
 }

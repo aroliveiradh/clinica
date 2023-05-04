@@ -1,18 +1,19 @@
 package com.dh.clinica.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 public class Consulta {
 
@@ -20,14 +21,18 @@ public class Consulta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "paciente_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Paciente paciente;
 
-    @OneToOne
-    @JoinColumn(name = "dentista_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "dentista_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Dentista dentista;
 
-    private LocalDateTime dataConsulta;
-
+    @Column(nullable = false)
+    @JsonProperty("dataHoraConsulta")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private LocalDateTime dataHoraConsulta;
 }
